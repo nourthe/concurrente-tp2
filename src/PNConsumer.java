@@ -3,8 +3,9 @@ class PNConsumer extends Thread {
 
 	private Monitor mMonitor;
 
-	public PNConsumer(Monitor m) {
+	PNConsumer(Monitor m, String name) {
 		this.mMonitor = m;
+		this.setName(name);
 	}
 
 	@Override

@@ -7,25 +7,43 @@ import java.util.concurrent.locks.ReentrantLock;
 
 class Monitor {
 
-	private final Queue<String> buffer1 = new LinkedList<>();
-	private final Queue<String> buffer2 = new LinkedList<>();
-	private final PN mPN = new PN();
+	private final Queue<String> buffer1;
+	private final Queue<String> buffer2;
+	private final PN mPN;
 
-	private final Lock mLock = new ReentrantLock();
+	private final Lock mLock;
 
-	private final Condition mNeitherFull = mLock.newCondition();
-	private final Condition mNeitherEmpty = mLock.newCondition();
+	private final Condition mNotFull;
+	private final Condition mNotEmpty;
 
-	public Monitor() {
+	Monitor() {
+		buffer1 = new LinkedList<>();
+		buffer2 = new LinkedList<>();
+
+		mPN = new PN();
+
+		mLock = new ReentrantLock(true);
+		mNotFull = mLock.newCondition();
+		mNotEmpty = mLock.newCondition();
 	}
 
-	public void produce(String data) {
+	int getBuffersLoad() {
+		mLock.lock();
+		try {
+			return buffer1.size() + buffer2.size();
+		}
+		finally {
+			mLock.unlock();
+		}
+	}
+
+	void produce(String data) {
 		mLock.lock();
 		try {
 			List<PN.Transitions> availableTransitions = mPN.getEnabledTransitions();
 			while ( !availableTransitions.contains(PN.Transitions.PRODUCE_BUFFER_1) &&
 					!availableTransitions.contains(PN.Transitions.PRODUCE_BUFFER_2)) {
-				mNeitherFull.await();
+				mNotFull.await();
 			}
 			if (mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_1)) {
 				mPN.fire(PN.Transitions.PRODUCE_BUFFER_1);
@@ -37,7 +55,7 @@ class Monitor {
 				buffer2.add(data);
 				mPN.fire(PN.Transitions.FINISHED_PRODUCING_BUFFER_2);
 			}
-			mNeitherEmpty.signal();
+			mNotEmpty.signal();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -47,14 +65,14 @@ class Monitor {
 
 	}
 
-	public String consume() {
+	String consume() {
 		mLock.lock();
 		String item = "";
 		try {
 			List<PN.Transitions> availableTransitions = mPN.getEnabledTransitions();
 			while ( !availableTransitions.contains(PN.Transitions.CONSUME_BUFFER_1) &&
 					!availableTransitions.contains(PN.Transitions.CONSUME_BUFFER_2)) {
-				mNeitherEmpty.await();
+				mNotEmpty.await();
 			}
 			if (mPN.isTransitionEnabled(PN.Transitions.CONSUME_BUFFER_1)) {
 				mPN.fire(PN.Transitions.CONSUME_BUFFER_1);
@@ -66,7 +84,7 @@ class Monitor {
 				item = buffer2.poll();
 				mPN.fire(PN.Transitions.FINISHED_CONSUMING_BUFFER_2);
 			}
-			mNeitherFull.signal();
+			mNotFull.signal();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

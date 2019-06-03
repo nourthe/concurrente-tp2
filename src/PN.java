@@ -3,9 +3,9 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PN {
-	Array2DRowRealMatrix mIncidenceMatrix;
-	Array2DRowRealMatrix mMarking;
+class PN {
+	private Array2DRowRealMatrix mIncidenceMatrix;
+	private Array2DRowRealMatrix mMarking;
 
 	enum Transitions {
 		CONSUME_BUFFER_1(0),
@@ -28,7 +28,7 @@ public class PN {
 		}
 	}
 
-	public PN() {
+	PN() {
 		double[] initialMarking = {
 			0,0,5,0,0,10,15,0,0,8
 		};
@@ -49,11 +49,11 @@ public class PN {
 		mIncidenceMatrix = new Array2DRowRealMatrix(incidenceMatrix);
 	}
 
-	public void fire(Transitions transition) {
+	void fire(Transitions transition) {
 		mMarking =
 				mMarking.add(new Array2DRowRealMatrix(mIncidenceMatrix.getColumn(transition.getTransitionCode())));
 	}
-	public boolean isTransitionEnabled(Transitions transition) {
+	boolean isTransitionEnabled(Transitions transition) {
 		Array2DRowRealMatrix matrix =
 		mMarking.add(new Array2DRowRealMatrix(mIncidenceMatrix.getColumn(transition.getTransitionCode())));
 		for (int i = 0; i<matrix.getRowDimension(); i++) {
@@ -62,7 +62,7 @@ public class PN {
 		return true;
 	}
 
-	public List<Transitions> getEnabledTransitions() {
+	List<Transitions> getEnabledTransitions() {
 		List<Transitions> enabledTransitionsList = new ArrayList<>();
 		for (Transitions t : Transitions.values()) {
 			if (isTransitionEnabled(t)) enabledTransitionsList.add(t);
