@@ -9,11 +9,11 @@ class PNConsumer extends Thread {
 
 	@Override
 	public void run() {
-		while (true) {
+		String item = "";
+		while (!interrupted()) {
 			System.out.println(Thread.currentThread().getName() +  " Quiero consumir");
-			mMonitor.consume();
-			System.out.println(Thread.currentThread().getName() +  " Ya consumi");
-
+			item = mMonitor.consume();
+			System.out.println(Thread.currentThread().getName() +  " Ya consumi " + item);
 		}
 	}
 }

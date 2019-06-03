@@ -12,8 +12,8 @@ public class PN {
 		CONSUME_BUFFER_2(1),
 		PRODUCE_BUFFER_1(2),
 		PRODUCE_BUFFER_2(3),
-		FINISHED_PRODUCING_BUFFER_1(4),
-		FINISHED_PRODUCING_BUFFER_2(5),
+		FINISHED_PRODUCING_BUFFER_2(4),
+		FINISHED_PRODUCING_BUFFER_1(5),
 		FINISHED_CONSUMING_BUFFER_1(6),
 		FINISHED_CONSUMING_BUFFER_2(7);
 
@@ -35,16 +35,16 @@ public class PN {
 		mMarking = new Array2DRowRealMatrix(initialMarking);
 		double[][] incidenceMatrix = {
 				//Consumir en buffer 1,Consumir en buffer 2,Producir en buffer 1,Producir en buffer 2,T2,T3,T7,T8
-				{-1,0,0,0,0,1,0,0}, //Buffer 1
-				{0,-1,0,0,1,0,0,0}, //Buffer 2
-				{-1,-1,0,0,0,0,1,1}, //Consumidores
-				{1,0,0,0,0,0,-1,0}, //Consumiendo buffer 1
-				{0,1,0,0,0,0,0,-1}, //Consumiendo buffer 2
-				{0,0,-1,0,0,0,1,0}, //Espacios buffer 1
-				{0,0,0,-1,0,0,0,1}, //Espacios buffer 2
-				{0,0,1,0,0,-1,0,0}, //Produciendo en buffer 1
-				{0,0,0,1,-1,0,0,0}, //Produciendo en buffer 2
-				{0,0,-1,-1,1,1,0,0} //Productores
+				{-1, 0, 0, 0, 0, 1, 0, 0}, //Buffer 1
+				{0, -1, 0, 0, 1, 0, 0, 0}, //Buffer 2
+				{-1,-1, 0, 0, 0, 0, 1, 1}, //Consumidores
+				{1,  0, 0, 0, 0, 0,-1, 0}, //Consumiendo buffer 1
+				{0,  1, 0, 0, 0, 0, 0,-1}, //Consumiendo buffer 2
+				{0,  0,-1, 0, 0, 0, 1, 0}, //Espacios buffer 1
+				{0,  0, 0,-1, 0, 0, 0, 1}, //Espacios buffer 2
+				{0,  0, 1, 0, 0,-1, 0, 0}, //Produciendo en buffer 1
+				{0,  0, 0, 1,-1, 0, 0, 0}, //Produciendo en buffer 2
+				{0,  0,-1,-1, 1, 1, 0, 0} //Productores
 		};
 		mIncidenceMatrix = new Array2DRowRealMatrix(incidenceMatrix);
 	}

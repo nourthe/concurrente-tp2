@@ -13,8 +13,8 @@ class Monitor {
 
 	private final Lock mLock = new ReentrantLock();
 
-	private final Condition mBothNotFull = mLock.newCondition();
-	private final Condition mBothNotEmpty = mLock.newCondition();
+	private final Condition mNeitherFull = mLock.newCondition();
+	private final Condition mNeitherEmpty = mLock.newCondition();
 
 	public Monitor() {
 	}
@@ -25,7 +25,7 @@ class Monitor {
 			List<PN.Transitions> availableTransitions = mPN.getEnabledTransitions();
 			while ( !availableTransitions.contains(PN.Transitions.PRODUCE_BUFFER_1) &&
 					!availableTransitions.contains(PN.Transitions.PRODUCE_BUFFER_2)) {
-				mBothNotFull.await();
+				mNeitherFull.await();
 			}
 			if (mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_1)) {
 				mPN.fire(PN.Transitions.PRODUCE_BUFFER_1);
@@ -37,9 +37,9 @@ class Monitor {
 				buffer2.add(data);
 				mPN.fire(PN.Transitions.FINISHED_PRODUCING_BUFFER_2);
 			}
-			mBothNotEmpty.signal();
+			mNeitherEmpty.signal();
 		} catch (InterruptedException e) {
-
+			e.printStackTrace();
 		}
 		finally {
 			mLock.unlock();
@@ -47,30 +47,33 @@ class Monitor {
 
 	}
 
-	public void consume() {
+	public String consume() {
 		mLock.lock();
+		String item = "";
 		try {
 			List<PN.Transitions> availableTransitions = mPN.getEnabledTransitions();
 			while ( !availableTransitions.contains(PN.Transitions.CONSUME_BUFFER_1) &&
 					!availableTransitions.contains(PN.Transitions.CONSUME_BUFFER_2)) {
-				mBothNotEmpty.await();
+				mNeitherEmpty.await();
 			}
 			if (mPN.isTransitionEnabled(PN.Transitions.CONSUME_BUFFER_1)) {
 				mPN.fire(PN.Transitions.CONSUME_BUFFER_1);
-				buffer1.poll();
+				item = buffer1.poll();
 				mPN.fire(PN.Transitions.FINISHED_CONSUMING_BUFFER_1);
 			}
 			else if (mPN.isTransitionEnabled(PN.Transitions.CONSUME_BUFFER_2)) {
 				mPN.fire(PN.Transitions.CONSUME_BUFFER_2);
-				buffer2.poll();
+				item = buffer2.poll();
 				mPN.fire(PN.Transitions.FINISHED_CONSUMING_BUFFER_2);
 			}
-			mBothNotFull.signal();
+			mNeitherFull.signal();
 		} catch (InterruptedException e) {
-
+			e.printStackTrace();
 		}
 		finally {
 			mLock.unlock();
 		}
+
+		return item;
 	}
 }
