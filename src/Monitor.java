@@ -41,8 +41,8 @@ class Monitor {
 		mLock.lock();
 		try {
 			List<PN.Transitions> availableTransitions = mPN.getEnabledTransitions();
-			while ( !availableTransitions.contains(PN.Transitions.PRODUCE_BUFFER_1) &&
-					!availableTransitions.contains(PN.Transitions.PRODUCE_BUFFER_2)) {
+			while ( !mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_1) &&
+					!mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_2)) {
 				mNotFull.await();
 			}
 			if (mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_1)) {
@@ -70,8 +70,8 @@ class Monitor {
 		String item = "";
 		try {
 			List<PN.Transitions> availableTransitions = mPN.getEnabledTransitions();
-			while ( !availableTransitions.contains(PN.Transitions.CONSUME_BUFFER_1) &&
-					!availableTransitions.contains(PN.Transitions.CONSUME_BUFFER_2)) {
+			while ( !mPN.isTransitionEnabled(PN.Transitions.CONSUME_BUFFER_1) &&
+					!mPN.isTransitionEnabled(PN.Transitions.CONSUME_BUFFER_2)) {
 				mNotEmpty.await();
 			}
 			if (mPN.isTransitionEnabled(PN.Transitions.CONSUME_BUFFER_1)) {
