@@ -14,6 +14,7 @@ class PNConsumer extends Thread {
 		while (!interrupted()) {
 			System.out.println(Thread.currentThread().getName() +  " Quiero consumir");
 			item = mMonitor.consume();
+			if (!item.isEmpty())
 			System.out.println(Thread.currentThread().getName() +  " Ya consumi " + item);
 		}
 	}

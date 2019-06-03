@@ -1,5 +1,4 @@
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -40,7 +39,6 @@ class Monitor {
 	void produce(String data) {
 		mLock.lock();
 		try {
-			List<PN.Transitions> availableTransitions = mPN.getEnabledTransitions();
 			while ( !mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_1) &&
 					!mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_2)) {
 				mNotFull.await();
@@ -69,7 +67,6 @@ class Monitor {
 		mLock.lock();
 		String item = "";
 		try {
-			List<PN.Transitions> availableTransitions = mPN.getEnabledTransitions();
 			while ( !mPN.isTransitionEnabled(PN.Transitions.CONSUME_BUFFER_1) &&
 					!mPN.isTransitionEnabled(PN.Transitions.CONSUME_BUFFER_2)) {
 				mNotEmpty.await();
@@ -86,7 +83,9 @@ class Monitor {
 			}
 			mNotFull.signal();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			// Hay que llamar el metodo interrupt porque cuando se interrumpe la bandera Interrupted
+			// se resetea y el run del consumer se va a ejecutar para siempre
+			Thread.currentThread().interrupt();
 		}
 		finally {
 			mLock.unlock();

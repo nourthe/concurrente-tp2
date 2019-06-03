@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Main {
-
+    private static final int NUMBER_OF_PRODUCERS = 5;
+    private static final int NUMBER_OF_CONSUMERS = 8;
     public static void main(String[] args) {
 
         System.out.println("Hello World!");
@@ -12,18 +14,18 @@ public class Main {
         // Producers
         List<Thread> producerThreadList = new ArrayList<>();
 
-        for (int i = 0; i < 8; i++) {
+        IntStream.range(0,NUMBER_OF_PRODUCERS).forEachOrdered(i -> {
             producerThreadList.add(new PNProducer(monitor, "Producer-"+i));
             producerThreadList.get(i).start();
-        }
+        });
 
         // Consumers
         List<Thread> consumerThreadList = new ArrayList<>();
 
-        for (int i = 0; i < 5; i++) {
+        IntStream.range(0,NUMBER_OF_CONSUMERS).forEachOrdered(i -> {
             consumerThreadList.add(new PNConsumer(monitor, "Consumer-"+i));
             consumerThreadList.get(i).start();
-        }
+        });
 
         producerThreadList.forEach(thread -> {
             try {
@@ -38,7 +40,7 @@ public class Main {
 
         while (monitor.getBuffersLoad() != 0){
             try {
-                Thread.sleep(500);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
