@@ -11,7 +11,12 @@ class PNProducer extends Thread {
 	public void run() {
 		for (int i=0; i<10000; i++) {
 			System.out.println(Thread.currentThread().getName() +  " Quiero producir:" + i);
-			mMonitor.produce("Produccion " + i);
+//			mMonitor.produce("Produccion " + i);
+			mMonitor.startProducing();
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {e.printStackTrace();}
+			finally {mMonitor.finishProducing("Produccion " + i);}
 			System.out.println(Thread.currentThread().getName() +  " Ya produje:" + i);
 		}
 	}

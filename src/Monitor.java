@@ -35,7 +35,39 @@ class Monitor {
 			mLock.unlock();
 		}
 	}
-
+	void startProducing() {
+		mLock.lock();
+		try {
+			while ( !mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_1) &&
+					!mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_2)) {
+				mNotFull.await();
+			}
+			if (mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_1)) {
+				mPN.fire(PN.Transitions.PRODUCE_BUFFER_1);
+			}
+			else if (mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_2)) {
+				mPN.fire(PN.Transitions.PRODUCE_BUFFER_2);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		finally {
+			mLock.unlock();
+		}
+	}
+	void finishProducing(String data) {
+		mLock.lock();
+		if (mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_1)) {
+			buffer1.add(data);
+			mPN.fire(PN.Transitions.FINISHED_PRODUCING_BUFFER_1);
+		}
+		else if (mPN.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_2)) {
+			buffer2.add(data);
+			mPN.fire(PN.Transitions.FINISHED_PRODUCING_BUFFER_2);
+		}
+		mNotEmpty.signal();
+		mLock.unlock();
+	}
 	void produce(String data) {
 		mLock.lock();
 		try {
