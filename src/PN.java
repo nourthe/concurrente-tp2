@@ -1,6 +1,7 @@
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class PN {
@@ -70,4 +71,8 @@ class PN {
 		return enabledTransitionsList;
 	}
 
+	public String getMarkingString() {
+		System.out.println(Arrays.toString(mMarking.transpose().getData()[0]));
+		return Arrays.toString(mMarking.transpose().getData()[0]);
+	}
 }

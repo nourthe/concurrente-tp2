@@ -27,6 +27,10 @@ public class Main {
             consumerThreadList.get(i).start();
         });
 
+        // Loger create and start.
+        Loger loger = new Loger(monitor, producerThreadList, consumerThreadList, "out/log.txt");
+        loger.start();
+
         producerThreadList.forEach(thread -> {
             try {
                 thread.join();
@@ -48,5 +52,6 @@ public class Main {
 
         System.out.println("Consumidos todos los items\n");
         consumerThreadList.forEach(Thread::interrupt);
+        loger.interrupt();
     }
 }

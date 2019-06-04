@@ -125,4 +125,11 @@ class Monitor {
 
 		return item;
 	}
+
+	public String[] getState() {
+		mLock.lock();
+	    String[] strings = {String.valueOf(buffer1.size()), String.valueOf(buffer2.size()), mPN.getMarkingString()};
+		mLock.unlock();
+	    return strings;
+	}
 }
