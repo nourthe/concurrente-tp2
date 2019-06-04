@@ -7,7 +7,6 @@ public class Main {
     private static final int NUMBER_OF_CONSUMERS = 8;
     public static void main(String[] args) {
 
-        System.out.println("Hello World!");
         // new PNtest();
         Monitor monitor = new Monitor();
 

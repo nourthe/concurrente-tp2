@@ -31,7 +31,7 @@ class PN {
 
 	PN() {
 		double[] initialMarking = {
-			0,0,5,0,0,10,15,0,0,8
+			0,0,8,0,0,10,15,0,0,5
 		};
 		mMarking = new Array2DRowRealMatrix(initialMarking);
 		double[][] incidenceMatrix = {
