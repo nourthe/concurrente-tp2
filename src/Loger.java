@@ -37,7 +37,8 @@ public class Loger extends Thread {
 
                 pw.printf("\n");
 
-                String[] state = mMonitor.getState();
+                //String[] state = mMonitor.getState();
+                String[] state = { "1", "2" };
 
                 pw.printf("Storage 1 load: %s\n", state[0]);
                 pw.printf("Storage 2 load: %s\n", state[1]);
