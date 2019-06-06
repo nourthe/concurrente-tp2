@@ -29,10 +29,7 @@ class PN {
 		}
 	}
 
-	PN() {
-		double[] initialMarking = {
-			0,0,5,0,0,10,15,0,0,8
-		};
+	PN(double[] initialMarking) {
 		mMarking = new Array2DRowRealMatrix(initialMarking);
 		double[][] incidenceMatrix = {
 				//Consumir en buffer 1,Consumir en buffer 2,Producir en buffer 1,Producir en buffer 2,T2,T3,T7,T8
@@ -68,11 +65,16 @@ class PN {
 		for (Transitions t : Transitions.values()) {
 			if (isTransitionEnabled(t)) enabledTransitionsList.add(t);
 		}
+
 		return enabledTransitionsList;
 	}
 
 	public String getMarkingString() {
 		System.out.println(Arrays.toString(mMarking.transpose().getData()[0]));
 		return Arrays.toString(mMarking.transpose().getData()[0]);
+	}
+
+	int getTotalTransitions() {
+		return mIncidenceMatrix.getColumnDimension();
 	}
 }
