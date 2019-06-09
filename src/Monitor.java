@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -17,22 +18,27 @@ class Monitor {
 		// create one condition per transition
 		for (PN.Transitions t : PN.Transitions.values()) conditions.put(t, mLock.newCondition());
 	}
-
-	public void fireTransitions(PN.Transitions... transitions) {
+	/**
+	 * @return true if the transition could be fired, else otherwise */
+	public boolean fireTransitions(PN.Transitions... transitions) {
 		mLock.lock();
 		try {
 			for (PN.Transitions t : transitions) {
 				// sleep in queue until condition is met
-				while (!mPN.isTransitionEnabled(t)) conditions.get(t).await();
+				while (!mPN.isTransitionEnabled(t)) {
+					if (!conditions.get(t).await(60, TimeUnit.MILLISECONDS)) return false;
+				}
 
 				mPN.fire(t);
 			}
 
 			// send a signal to all conditions with enabled transitions
 			for (PN.Transitions t: mPN.getEnabledTransitions()) conditions.get(t).signal();
+			return true;
 		}
 		catch (InterruptedException e) {
-			e.printStackTrace();
+			Thread.currentThread().interrupt();
+			return false;
 		}
 		finally {
 			mLock.unlock();

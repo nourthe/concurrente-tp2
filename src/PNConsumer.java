@@ -20,11 +20,9 @@ class PNConsumer extends Thread {
 		while (!interrupted()) {
 			int buffer = (Math.random() <= 0.5) ? 0 : 1;
 			System.out.println(Thread.currentThread().getName() + " Quiero consumir de buffer " + (buffer+1));
-			mMonitor.fireTransitions(consumerRecipe[buffer].getTransitions());
+			if (!mMonitor.fireTransitions(consumerRecipe[buffer].getTransitions())) continue;
 			String item = consumerRecipe[buffer].getBuffer().poll();
 			System.out.println(Thread.currentThread().getName() + " Ya consumi " + item);
 		}
-
-		Thread.currentThread().interrupt();
 	}
 }

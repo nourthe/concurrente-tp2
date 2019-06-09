@@ -27,16 +27,23 @@ class PNProducer extends Thread {
 			System.out.println(Thread.currentThread().getName() + ": Quiero producir: " + item + " en buffer " + (buffer+1));
 
 			if (!produceOutside) {
-				mMonitor.fireTransitions(producerRecipes[buffer].getTransitions());
+				if (!mMonitor.fireTransitions(producerRecipes[buffer].getTransitions())) {
+					i--;
+					continue;
+				}
 			} else {
 				// TODO: make a dictionary inside Recipe to associate functions to transitions
-				mMonitor.fireTransitions(producerRecipes[buffer].getTransitions()[0]);
+				if (!mMonitor.fireTransitions(producerRecipes[buffer].getTransitions()[0])) {
+					i--; continue;
+				}
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				mMonitor.fireTransitions(producerRecipes[buffer].getTransitions()[1]);
+				if (!mMonitor.fireTransitions(producerRecipes[buffer].getTransitions()[1])) {
+					i--; continue;
+				}
 			}
 
 			producerRecipes[buffer].getBuffer().add(item);

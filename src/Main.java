@@ -48,7 +48,7 @@ public class Main {
 
         while ((buffer1.size() & buffer2.size()) != 0){
             try {
-                Thread.sleep(1000);
+                Thread.sleep(0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
