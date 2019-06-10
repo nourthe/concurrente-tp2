@@ -72,7 +72,6 @@ class PN {
 	}
 
 	public String getMarkingString() {
-		System.out.println(Arrays.toString(mMarking.transpose().getData()[0]));
 		return Arrays.toString(mMarking.transpose().getData()[0]);
 	}
 

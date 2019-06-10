@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class Main {
@@ -10,7 +7,8 @@ public class Main {
     public static void main(String[] args) {
 
         // new PNtest();
-        Monitor monitor = new Monitor();
+        PN mPN = new PN();
+        Monitor monitor = new Monitor(mPN);
 
         // Buffers
         Queue<String> buffer1 = new LinkedList<>();
@@ -33,8 +31,8 @@ public class Main {
         });
 
         // Loger create and start.
-        //Loger loger = new Loger(monitor, producerThreadList, consumerThreadList, "out/log.txt");
-        //loger.start();
+        Loger loger = new Loger(mPN, List.of(buffer1, buffer2), producerThreadList, consumerThreadList, "out/log.txt");
+        loger.start();
 
         producerThreadList.forEach(thread -> {
             try {
@@ -56,6 +54,6 @@ public class Main {
 
         System.out.println("Consumidos todos los items\n");
         consumerThreadList.forEach(Thread::interrupt);
-        //loger.interrupt();
+        loger.interrupt();
     }
 }

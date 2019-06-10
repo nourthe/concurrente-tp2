@@ -1,19 +1,22 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.List;
 
 public class Loger extends Thread {
 
-    private Monitor mMonitor;
+    private final PN mPN;
+    private List<Collection> mBufferList;
     private List<Thread> mProducerList;
     private List<Thread> mConsumerList;
 
     private FileWriter file;
     private PrintWriter pw;
 
-    public Loger(Monitor mMonitor, List<Thread> mProducerList, List<Thread> mConsumerList, String fileLocation) {
-        this.mMonitor = mMonitor;
+    public Loger(PN pn, List<Collection> mBufferList, List<Thread> mProducerList, List<Thread> mConsumerList, String fileLocation) {
+        this.mPN = pn;
+        this.mBufferList = mBufferList;
         this.mProducerList = mProducerList;
         this.mConsumerList = mConsumerList;
 
@@ -27,7 +30,7 @@ public class Loger extends Thread {
 
     @Override
     public void run() {
-        int each = 2; //seconds
+        int each = 2; //how many seconds between iterations
         int i = 0;
         try{
             while(true){
@@ -37,29 +40,32 @@ public class Loger extends Thread {
 
                 pw.printf("\n");
 
-                //String[] state = mMonitor.getState();
-                String[] state = { "1", "2" };
-
-                pw.printf("Storage 1 load: %s\n", state[0]);
-                pw.printf("Storage 2 load: %s\n", state[1]);
+                pw.printf("Petri Net Marking: %s\n", mPN.getMarkingString());
 
                 pw.printf("\n");
 
-                pw.printf("Petri Net Marking: %s\n", state[2]);
-
+                pw.printf("Buffers Loads:\n");
+                int b = 0;
+                for (Collection buffer: mBufferList) {
+                    b++;
+                    pw.printf(" Buffer: %s\tSize: %s\n", b, buffer.size());
+                }
+                pw.printf("Threads States:\n");
                 for (Thread p: mProducerList) {
                     pw.printf(" Name: %s\tState: %s\n", p.getName(), p.getState());
                 }
                 for (Thread c: mConsumerList) {
                     pw.printf(" Name: %s\tState: %s\n", c.getName(), c.getState());
                 }
+
                 pw.printf("\n");
-                //Sleep 2 secs
+
+                //Sleep 'each' seconds
                 Thread.sleep(each * 1000);
                 i++;
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("Loger detenido.");
         } finally {
             //Closing file
             try {
