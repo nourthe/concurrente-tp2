@@ -1,4 +1,6 @@
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -11,8 +13,7 @@ class Monitor {
 	private final HashMap<PN.Transitions, Condition> conditions = new HashMap<>();
 
 	Monitor() {
-		double[] initialMarking = {0,0,8,0,0,10,15,0,0,5};
-		mPN = new PN(initialMarking);
+		mPN = new PN();
 
 		mLock = new ReentrantLock(true);
 		// create one condition per transition
@@ -20,16 +21,17 @@ class Monitor {
 	}
 	/**
 	 * @return true if the transition could be fired, else otherwise */
-	public boolean fireTransitions(PN.Transitions... transitions) {
+	public boolean fireTransitions(LinkedHashMap<PN.Transitions, Runnable> transitionsExecutableLinkedHashMap) {
 		mLock.lock();
 		try {
-			for (PN.Transitions t : transitions) {
+			for (PN.Transitions t : transitionsExecutableLinkedHashMap.keySet()) {
 				// sleep in queue until condition is met
 				while (!mPN.isTransitionEnabled(t)) {
-					if (!conditions.get(t).await(60, TimeUnit.MILLISECONDS)) return false;
+					if (!conditions.get(t).await(200, TimeUnit.MILLISECONDS)) return false;
 				}
 
 				mPN.fire(t);
+				transitionsExecutableLinkedHashMap.get(t).run();
 			}
 
 			// send a signal to all conditions with enabled transitions

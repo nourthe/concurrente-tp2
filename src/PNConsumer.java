@@ -4,15 +4,19 @@ class PNConsumer extends Thread {
 
 
 	private Monitor mMonitor;
-	private Recipe[] consumerRecipe = new Recipe[2];
+	private Recipe[] consumeInsideRecipe = new Recipe[2];
+	private String item;
 
 	PNConsumer(Monitor m, String name, Queue<String> buffer1, Queue<String> buffer2) {
 		this.mMonitor = m;
 		this.setName(name);
-		consumerRecipe[0] = new Recipe(buffer1, PN.Transitions.CONSUME_BUFFER_1,
-				PN.Transitions.FINISHED_CONSUMING_BUFFER_1);
-		consumerRecipe[1] = new Recipe(buffer2, PN.Transitions.CONSUME_BUFFER_2,
-				PN.Transitions.FINISHED_CONSUMING_BUFFER_2);
+		this.consumeInsideRecipe[0] = new Recipe();
+		this.consumeInsideRecipe[1] = new Recipe();
+
+		this.consumeInsideRecipe[0].addMapping(PN.Transitions.CONSUME_BUFFER_1, () -> {});
+		this.consumeInsideRecipe[0].addMapping(PN.Transitions.FINISHED_CONSUMING_BUFFER_1,() -> item = buffer1.poll());
+		this.consumeInsideRecipe[1].addMapping(PN.Transitions.CONSUME_BUFFER_2, () -> {});
+		this.consumeInsideRecipe[1].addMapping(PN.Transitions.FINISHED_CONSUMING_BUFFER_2, () -> item = buffer2.poll());
 	}
 
 	@Override
@@ -20,8 +24,7 @@ class PNConsumer extends Thread {
 		while (!interrupted()) {
 			int buffer = (Math.random() <= 0.5) ? 0 : 1;
 			System.out.println(Thread.currentThread().getName() + " Quiero consumir de buffer " + (buffer+1));
-			if (!mMonitor.fireTransitions(consumerRecipe[buffer].getTransitions())) continue;
-			String item = consumerRecipe[buffer].getBuffer().poll();
+			if (!mMonitor.fireTransitions(consumeInsideRecipe[buffer].getTransitionMap())) continue;
 			System.out.println(Thread.currentThread().getName() + " Ya consumi " + item);
 		}
 	}

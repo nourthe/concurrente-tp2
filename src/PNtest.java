@@ -1,7 +1,7 @@
 class PNtest {
 	public PNtest() {
 		double[] initialMarking = {0, 0, 8, 0, 0, 10, 15, 0, 0, 5};
-		PN pene = new PN(initialMarking);
+		PN pene = new PN();
 		if (pene.isTransitionEnabled(PN.Transitions.PRODUCE_BUFFER_1)) {
 			System.out.println("Puedo producir buffer 1");
 			pene.fire(PN.Transitions.PRODUCE_BUFFER_1);

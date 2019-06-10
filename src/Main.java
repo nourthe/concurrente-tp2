@@ -20,7 +20,7 @@ public class Main {
         List<Thread> producerThreadList = new ArrayList<>();
 
         IntStream.range(0,NUMBER_OF_PRODUCERS).forEachOrdered(i -> {
-            producerThreadList.add(new PNProducer(monitor, "Producer-"+i, buffer1, buffer2,false));
+            producerThreadList.add(new PNProducer(monitor, "Producer-"+i, buffer1, buffer2, true));
             producerThreadList.get(i).start();
         });
 
