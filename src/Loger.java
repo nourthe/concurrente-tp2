@@ -35,30 +35,7 @@ public class Loger extends Thread {
         try{
             while(true){
                 //Log
-                pw.printf("________________________________\n");
-                pw.printf("Time: %d seconds.\n", each*i);
-
-                pw.printf("\n");
-
-                pw.printf("Petri Net Marking: %s\n", mPN.getMarkingString());
-
-                pw.printf("\n");
-
-                pw.printf("Buffers Loads:\n");
-                int b = 0;
-                for (Collection buffer: mBufferList) {
-                    b++;
-                    pw.printf(" Buffer: %s\tSize: %s\n", b, buffer.size());
-                }
-                pw.printf("Threads States:\n");
-                for (Thread p: mProducerList) {
-                    pw.printf(" Name: %s\tState: %s\n", p.getName(), p.getState());
-                }
-                for (Thread c: mConsumerList) {
-                    pw.printf(" Name: %s\tState: %s\n", c.getName(), c.getState());
-                }
-
-                pw.printf("\n");
+                log(each, i);
 
                 //Sleep 'each' seconds
                 Thread.sleep(each * 1000);
@@ -66,6 +43,7 @@ public class Loger extends Thread {
             }
         } catch (InterruptedException e) {
             System.out.println("Loger detenido.");
+            log(each, i, true);
         } finally {
             //Closing file
             try {
@@ -74,5 +52,35 @@ public class Loger extends Thread {
             }
             catch (IOException e) { e.printStackTrace(); }
         }
+    }
+
+    private void log(int each, int i) { log(each, i, false); }
+
+    private void log(int each, int i, boolean last) {
+        i += last? 1 : 0;
+        pw.printf("________________________________\n");
+        pw.printf("Time:%s %d seconds.\n", last? " just under" : "", each*i);
+
+        pw.printf("\n");
+
+        pw.printf("Petri Net Marking: %s\n", mPN.getMarkingString());
+
+        pw.printf("\n");
+
+        pw.printf("Buffers Loads:\n");
+        int b = 0;
+        for (Collection buffer: mBufferList) {
+            b++;
+            pw.printf(" Buffer: %s\tSize: %s\n", b, buffer.size());
+        }
+        pw.printf("Threads States:\n");
+        for (Thread p: mProducerList) {
+            pw.printf(" Name: %s\tState: %s\n", p.getName(), p.getState());
+        }
+        for (Thread c: mConsumerList) {
+            pw.printf(" Name: %s\tState: %s\n", c.getName(), c.getState());
+        }
+
+        pw.printf("\n%s", last? " \nExecution completed in less than "+each*i+" seconds." : "");
     }
 }
